@@ -35,6 +35,7 @@ const Sidebar = ({ activeTab, setActiveTab, logo, isMobileMenuOpen, setIsMobileM
 
   const handleLogout = () => {
     localStorage.removeItem('isAdminAuthenticated');
+    localStorage.removeItem('adminToken');
     navigate('/');
   };
 

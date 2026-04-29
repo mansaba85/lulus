@@ -23,6 +23,7 @@ const Login = () => {
       const response = await api.login(formData);
       if (response.success) {
         localStorage.setItem('isAdminAuthenticated', 'true');
+        localStorage.setItem('adminToken', response.token); // Simpan Tiket Masuk (Token)
         toast.success('Login Berhasil! Selamat datang Admin.');
         navigate('/admin');
       } else {
