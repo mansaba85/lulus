@@ -84,6 +84,14 @@ const initDB = async (retries = 5) => {
 
 initDB();
 
+// Middleware to check DB readiness
+app.use('/api', (req, res, next) => {
+  if (!db && req.path !== '/login') {
+    return res.status(503).json({ error: 'Database sedang bersiap, silakan coba lagi dalam beberapa detik...' });
+  }
+  next();
+});
+
 // --- API ---
 
 app.post('/api/login', async (req, res) => {
