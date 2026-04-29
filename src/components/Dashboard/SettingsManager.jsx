@@ -10,7 +10,8 @@ import {
   Camera, 
   AtSign, 
   Lock, 
-  Eye 
+  Eye,
+  EyeOff 
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -22,6 +23,10 @@ const SettingsManager = ({
   handleSaveSettings 
 }) => {
   const fileInputRef = React.useRef(null);
+  const [showPassword, setShowPassword] = React.useState(false);
+  const [adminUsername, setAdminUsername] = React.useState('admin');
+  const [adminPassword, setAdminPassword] = React.useState('admin123');
+  const [adminName, setAdminName] = React.useState('Administrator Utama');
 
   const handleLogoChange = (e) => {
     const file = e.target.files[0];
@@ -152,25 +157,52 @@ const SettingsManager = ({
 
             <div style={{ width: '100%', marginBottom: '1.5rem' }}>
               <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: '800', color: '#64748b', marginBottom: '0.75rem', textTransform: 'uppercase' }}>Nama Lengkap</label>
-              <input type="text" defaultValue="Administrator Utama" style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '2px solid #f1f5f9', fontSize: '1rem', fontWeight: '600' }} />
+              <input 
+                type="text" 
+                value={adminName} 
+                onChange={(e) => setAdminName(e.target.value)}
+                style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '2px solid #f1f5f9', fontSize: '1rem', fontWeight: '600' }} 
+              />
             </div>
             <div style={{ width: '100%', marginBottom: '1.5rem' }}>
               <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: '800', color: '#64748b', marginBottom: '0.75rem', textTransform: 'uppercase' }}>Username</label>
               <div style={{ position: 'relative' }}>
-                <input type="text" defaultValue="admin_manuby" style={{ width: '100%', padding: '1rem 1rem 1rem 3rem', borderRadius: '12px', border: '2px solid #f1f5f9', fontSize: '1rem', fontWeight: '600' }} />
+                <input 
+                  type="text" 
+                  value={adminUsername} 
+                  onChange={(e) => setAdminUsername(e.target.value)}
+                  style={{ width: '100%', padding: '1rem 1rem 1rem 3rem', borderRadius: '12px', border: '2px solid #f1f5f9', fontSize: '1rem', fontWeight: '600' }} 
+                />
                 <AtSign size={18} style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: '#cbd5e1' }} />
               </div>
             </div>
             <div style={{ width: '100%', marginBottom: '3rem' }}>
               <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: '800', color: '#64748b', marginBottom: '0.75rem', textTransform: 'uppercase' }}>Kata Sandi</label>
               <div style={{ position: 'relative' }}>
-                <input type="password" defaultValue="password123" style={{ width: '100%', padding: '1rem 3rem', borderRadius: '12px', border: '2px solid #f1f5f9', fontSize: '1rem' }} />
+                <input 
+                  type={showPassword ? "text" : "password"} 
+                  value={adminPassword} 
+                  onChange={(e) => setAdminPassword(e.target.value)}
+                  style={{ width: '100%', padding: '1rem 3rem', borderRadius: '12px', border: '2px solid #f1f5f9', fontSize: '1rem' }} 
+                />
                 <Lock size={18} style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: '#cbd5e1' }} />
-                <Eye size={18} style={{ position: 'absolute', right: '1rem', top: '50%', transform: 'translateY(-50%)', color: '#cbd5e1', cursor: 'pointer' }} />
+                <button 
+                  onClick={() => setShowPassword(!showPassword)}
+                  style={{ position: 'absolute', right: '1rem', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', color: '#cbd5e1', cursor: 'pointer', display: 'flex', alignItems: 'center' }}
+                >
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
               </div>
             </div>
             <button 
-              onClick={() => toast.success('Profil admin berhasil diperbarui!')}
+              onClick={async () => {
+                try {
+                  await api.updateAdmin({ username: adminUsername, password: adminPassword });
+                  toast.success('Profil admin berhasil diperbarui!');
+                } catch (err) {
+                  toast.error('Gagal memperbarui profil');
+                }
+              }}
               style={{ width: '100%', backgroundColor: 'var(--primary-green)', color: 'white', padding: '1.25rem', borderRadius: '12px', fontWeight: '700', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem', boxShadow: '0 10px 20px rgba(15,81,50,0.2)' }}
             >
               <Save size={20} /> Simpan Perubahan Profil
