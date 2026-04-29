@@ -1,0 +1,197 @@
+import React, { useState, useEffect } from 'react';
+import { Search, User, Globe, Monitor } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
+import illustration from '../assets/illustration.png';
+import { api } from '../utils/api';
+import logo from '../assets/logo.png';
+
+const Home = () => {
+  const navigate = useNavigate();
+  const [schoolName, setSchoolName] = useState('MA NU 01 BANYUPUTIH');
+  const [schoolLogo, setSchoolLogo] = useState(logo);
+  const [token, setToken] = useState('');
+
+  useEffect(() => {
+    const fetchSettings = async () => {
+      try {
+        const settings = await api.getSettings();
+        if (settings) {
+          setSchoolName(settings.school_name);
+          setSchoolLogo(settings.school_logo || logo);
+          
+          // Check countdown
+          const targetDateStr = settings.release_date.split('T')[0];
+          const targetTimeStr = settings.release_time.substring(0, 5);
+          const targetDate = new Date(`${targetDateStr}T${targetTimeStr}:00+07:00`).getTime();
+          const now = Date.now();
+          if (now < targetDate) {
+            navigate('/countdown');
+          }
+        }
+      } catch (err) {
+        console.error('Failed to fetch settings');
+      }
+    };
+    fetchSettings();
+  }, [navigate]);
+
+  const handleSearch = async () => {
+    if (!token.trim()) {
+      toast.error('Masukkan token Anda!');
+      return;
+    }
+
+    try {
+      const student = await api.searchStudent(token);
+      if (student) {
+        navigate('/result', { state: { student } });
+      } else {
+        toast.error('Token tidak ditemukan atau salah!');
+      }
+    } catch (err) {
+      toast.error('Terjadi kesalahan saat mencari data');
+    }
+  };
+
+  return (
+    <div className="home-container" style={{ display: 'flex', minHeight: '100vh' }}>
+      {/* Left Side: Content */}
+      <div className="content-side" style={{ 
+        flex: 1, 
+        padding: '2rem 4rem', 
+        display: 'flex', 
+        flexDirection: 'column',
+        justifyContent: 'space-between',
+        backgroundColor: '#fff'
+      }}>
+        {/* Header */}
+        <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div className="logo" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            <img src={schoolLogo} alt="Logo" style={{ width: '50px', height: '50px', objectFit: 'contain' }} />
+          </div>
+          <nav style={{ display: 'flex', gap: '2rem', alignItems: 'center', fontWeight: '500' }}>
+            <a href="/" style={{ color: 'var(--primary-green)' }}>Home</a>
+            <a href="/informasi" style={{ color: 'var(--text-main)' }}>Informasi</a>
+            <a href="/admin" className="flex-center" style={{ 
+              color: 'var(--text-main)', 
+              fontSize: '1.2rem'
+            }}>
+              <User size={20} />
+            </a>
+          </nav>
+        </header>
+
+        {/* Hero Section */}
+        <motion.main 
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.8 }}
+          style={{ maxWidth: '500px' }}
+        >
+          <h2 style={{ fontSize: '1.5rem', fontWeight: '600', color: 'var(--text-main)', marginBottom: '0.5rem' }}>
+            PENGUMUMAN KELULUSAN
+          </h2>
+          <h1 style={{ fontSize: '3rem', fontWeight: '800', color: 'var(--primary-green)', lineHeight: 1.1, marginBottom: '1rem' }}>
+            {schoolName}
+          </h1>
+          <p style={{ fontSize: '1.25rem', fontWeight: '500', color: 'var(--text-muted)', fontStyle: 'italic', marginBottom: '3rem' }}>
+            TAHUN PELAJARAN 2025/2026
+          </p>
+
+          <div className="search-box" style={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            boxShadow: '0 10px 30px rgba(0,0,0,0.08)',
+            borderRadius: '50px',
+            overflow: 'hidden',
+            border: '1px solid #eee',
+            width: '100%',
+            maxWidth: '450px'
+          }}>
+            <input 
+              type="text" 
+              value={token}
+              onChange={(e) => setToken(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+              placeholder="Masukkan Token Disini..." 
+              style={{ 
+                flex: 1, 
+                padding: '1.25rem 2rem', 
+                border: 'none', 
+                fontSize: '1rem',
+                color: 'var(--text-main)',
+                textTransform: 'uppercase'
+              }}
+            />
+            <button 
+              onClick={handleSearch}
+              style={{ 
+                backgroundColor: 'var(--accent-maroon)', 
+                color: 'white', 
+                padding: '1.25rem 2.5rem',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+                fontWeight: '700',
+                fontSize: '1rem',
+                letterSpacing: '1px',
+                border: 'none',
+                cursor: 'pointer'
+              }}
+            >
+              CARI <Search size={20} />
+            </button>
+          </div>
+        </motion.main>
+
+        {/* Footer */}
+        <footer style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div className="socials" style={{ display: 'flex', gap: '1rem' }}>
+            <a href="#" className="flex-center" style={{ width: '32px', height: '32px', borderRadius: '50%', border: '1px solid #ddd' }}>
+              <Globe size={16} />
+            </a>
+            <a href="#" className="flex-center" style={{ width: '32px', height: '32px', borderRadius: '50%', border: '1px solid #ddd' }}>
+              <Monitor size={16} />
+            </a>
+          </div>
+          <p style={{ fontSize: '0.75rem', color: '#aaa', textAlign: 'right', textTransform: 'uppercase' }}>
+            © 2026 - {schoolName}<br />ALL RIGHT RESERVED
+          </p>
+        </footer>
+      </div>
+
+      {/* Right Side: Illustration */}
+      <div className="illustration-side" style={{ 
+        flex: 1, 
+        backgroundColor: '#f0f9f4',
+        position: 'relative',
+        overflow: 'hidden',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center'
+      }}>
+        <motion.img 
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 1, delay: 0.2 }}
+          src="/hero-bg.png" 
+          alt="Graduation" 
+          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+        />
+      </div>
+
+      {/* Responsive adjustments (Media Queries in index.css would be better, but for now inline styles or simple JS) */}
+      <style>{`
+        @media (max-width: 1024px) {
+          .home-container { flex-direction: column !important; }
+          .illustration-side { display: none !important; }
+          .content-side { min-height: 100vh !important; padding: 2rem !important; }
+        }
+      `}</style>
+    </div>
+  );
+};
+
+export default Home;
