@@ -8,6 +8,7 @@ import Countdown from './pages/Countdown';
 import Result from './pages/Result';
 import InfoPage from './pages/Info';
 import Login from './pages/Login';
+import { api } from './utils/api';
 import './index.css';
 
 // Protected Route Component
@@ -22,6 +23,34 @@ const ProtectedRoute = ({ children }) => {
 };
 
 function App() {
+  React.useEffect(() => {
+    const syncBranding = async () => {
+      try {
+        const settings = await api.getSettings();
+        if (settings) {
+          // Update Favicon
+          if (settings.school_logo) {
+            let link = document.querySelector("link[rel~='icon']");
+            if (!link) {
+              link = document.createElement('link');
+              link.rel = 'icon';
+              document.getElementsByTagName('head')[0].appendChild(link);
+            }
+            link.href = settings.school_logo;
+          }
+          
+          // Update Page Title
+          if (settings.school_name) {
+            document.title = `Kelulusan - ${settings.school_name}`;
+          }
+        }
+      } catch (error) {
+        console.error('Gagal sinkronisasi branding:', error);
+      }
+    };
+    syncBranding();
+  }, []);
+
   return (
     <Router>
       <Toaster position="top-right" richColors />
