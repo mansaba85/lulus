@@ -30,7 +30,7 @@ const SidebarLink = ({ icon, label, active, onClick }) => (
   </div>
 );
 
-const Sidebar = ({ activeTab, setActiveTab, logo, isMobileMenuOpen, setIsMobileMenuOpen }) => {
+const Sidebar = ({ activeTab, setActiveTab, logo, isMobileMenuOpen, setIsMobileMenuOpen, adminName }) => {
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -135,7 +135,7 @@ const Sidebar = ({ activeTab, setActiveTab, logo, isMobileMenuOpen, setIsMobileM
         <div style={{ padding: '1rem 2rem 2rem' }}>
           <div style={{ backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: '16px', padding: '1.25rem', border: '1px solid rgba(255,255,255,0.1)', marginBottom: '1rem' }}>
             <p style={{ fontSize: '0.75rem', opacity: 0.6, marginBottom: '0.25rem' }}>Masuk sebagai</p>
-            <p style={{ fontWeight: '700', fontSize: '0.9rem' }}>Admin Utama</p>
+            <p style={{ fontWeight: '700', fontSize: '0.9rem' }}>{adminName || 'Admin Utama'}</p>
           </div>
           <button 
             onClick={handleLogout}

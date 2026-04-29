@@ -57,7 +57,10 @@ const initDB = async (retries = 5) => {
 
     await db.query(`CREATE TABLE IF NOT EXISTS classes (id INT PRIMARY KEY AUTO_INCREMENT, name VARCHAR(100) NOT NULL)`);
     await db.query(`CREATE TABLE IF NOT EXISTS students (id INT PRIMARY KEY AUTO_INCREMENT, nis VARCHAR(50) NOT NULL UNIQUE, name VARCHAR(255) NOT NULL, class_name VARCHAR(100) NOT NULL, token VARCHAR(50) NOT NULL, status ENUM('LULUS', 'TIDAK LULUS') DEFAULT 'LULUS')`);
-    await db.query(`CREATE TABLE IF NOT EXISTS admins (id INT PRIMARY KEY AUTO_INCREMENT, username VARCHAR(100) NOT NULL UNIQUE, password VARCHAR(255) NOT NULL)`);
+    await db.query(`CREATE TABLE IF NOT EXISTS admins (id INT PRIMARY KEY AUTO_INCREMENT, username VARCHAR(100) NOT NULL UNIQUE, password VARCHAR(255) NOT NULL, fullname VARCHAR(255) DEFAULT 'Administrator Utama')`);
+
+    // Ensure fullname column exists for existing tables
+    try { await db.query("ALTER TABLE admins ADD COLUMN fullname VARCHAR(255) DEFAULT 'Administrator Utama'"); } catch (e) {}
 
     // Seed Defaults
     const [rows] = await db.query('SELECT count(*) as count FROM settings');
@@ -67,7 +70,7 @@ const initDB = async (retries = 5) => {
 
     const [adminRows] = await db.query('SELECT count(*) as count FROM admins');
     if (adminRows[0].count === 0) {
-      await db.query('INSERT INTO admins (username, password) VALUES (?, ?)', ['admin', 'admin123']);
+      await db.query('INSERT INTO admins (username, password, fullname) VALUES (?, ?, ?)', ['admin', 'admin123', 'Administrator Utama']);
       console.log('👤 Admin default dibuat: admin / admin123');
     }
 
@@ -104,17 +107,17 @@ app.post('/api/login', async (req, res) => {
 });
 
 app.post('/api/admin/update', async (req, res) => {
-  const { username, password } = req.body;
+  const { username, password, fullname } = req.body;
   try {
-    await db.query('UPDATE admins SET username = ?, password = ? WHERE id = 1', [username, password]);
+    await db.query('UPDATE admins SET username = ?, password = ?, fullname = ? WHERE id = 1', [username, password, fullname]);
     res.json({ success: true });
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
 app.get('/api/admin', async (req, res) => {
   try {
-    const [rows] = await db.query('SELECT username, password FROM admins WHERE id = 1');
-    res.json(rows[0] || { username: 'admin', password: '' });
+    const [rows] = await db.query('SELECT username, password, fullname FROM admins WHERE id = 1');
+    res.json(rows[0] || { username: 'admin', password: '', fullname: 'Administrator Utama' });
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 

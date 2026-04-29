@@ -21,7 +21,8 @@ const SettingsManager = ({
   releaseDate, setReleaseDate, 
   releaseTime, setReleaseTime, 
   schoolLogo, setSchoolLogo,
-  handleSaveSettings 
+  handleSaveSettings,
+  onAdminUpdate
 }) => {
   const fileInputRef = React.useRef(null);
   const [showPassword, setShowPassword] = React.useState(false);
@@ -36,6 +37,7 @@ const SettingsManager = ({
         if (data) {
           setAdminUsername(data.username || 'admin');
           setAdminPassword(data.password || '');
+          setAdminName(data.fullname || 'Administrator Utama');
         }
       } catch (err) {
         console.error('Failed to fetch admin data');
@@ -57,9 +59,14 @@ const SettingsManager = ({
 
   const onUpdateAdmin = async () => {
     try {
-      const res = await api.updateAdmin({ username: adminUsername, password: adminPassword });
+      const res = await api.updateAdmin({ 
+        username: adminUsername, 
+        password: adminPassword,
+        fullname: adminName 
+      });
       if (res.success) {
         toast.success('Profil admin berhasil diperbarui!');
+        if (onAdminUpdate) onAdminUpdate(); // Trigger refresh in Dashboard
       } else {
         toast.error('Gagal memperbarui profil');
       }

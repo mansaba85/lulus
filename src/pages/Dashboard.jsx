@@ -68,6 +68,7 @@ const Dashboard = () => {
   const [releaseDate, setReleaseDate] = useState('2026-05-15');
   const [releaseTime, setReleaseTime] = useState('10:00');
   const [schoolLogo, setSchoolLogo] = useState(logo);
+  const [adminName, setAdminName] = useState('Admin Utama');
 
   // UI States
   const [newClassName, setNewClassName] = useState('');
@@ -106,8 +107,20 @@ const Dashboard = () => {
     }
   };
 
+  const fetchAdmin = async () => {
+    try {
+      const data = await api.getAdmin();
+      if (data && data.fullname) {
+        setAdminName(data.fullname);
+      }
+    } catch (err) {
+      console.error('Failed to fetch admin data');
+    }
+  };
+
   useEffect(() => {
     fetchData();
+    fetchAdmin();
   }, []);
 
   const handleSaveSettings = async () => {
@@ -277,6 +290,7 @@ const Dashboard = () => {
         logo={schoolLogo} 
         isMobileMenuOpen={isMobileMenuOpen}
         setIsMobileMenuOpen={setIsMobileMenuOpen}
+        adminName={adminName}
       />
 
       <main className="dashboard-main" style={{ 
@@ -346,6 +360,7 @@ const Dashboard = () => {
               schoolLogo={schoolLogo}
               setSchoolLogo={setSchoolLogo}
               handleSaveSettings={handleSaveSettings}
+              onAdminUpdate={fetchAdmin}
             />
           )}
         </AnimatePresence>
