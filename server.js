@@ -28,9 +28,10 @@ const pool = mysql.createPool({
 
 let db;
 
-// Init DB & Tables
-const initDB = async () => {
+// Init DB & Tables with Retry Logic
+const initDB = async (retries = 5) => {
   try {
+    console.log('🔄 Menghubungkan ke Database...');
     await pool.query(`CREATE DATABASE IF NOT EXISTS \`${process.env.DB_NAME}\``);
     
     db = mysql.createPool({
@@ -43,7 +44,7 @@ const initDB = async () => {
       queueLimit: 0
     });
 
-    // Sesuaikan dengan foto user (settings table)
+    // Create Tables
     await db.query(`
       CREATE TABLE IF NOT EXISTS settings (
         id INT PRIMARY KEY AUTO_INCREMENT,
@@ -58,6 +59,7 @@ const initDB = async () => {
     await db.query(`CREATE TABLE IF NOT EXISTS students (id INT PRIMARY KEY AUTO_INCREMENT, nis VARCHAR(50) NOT NULL UNIQUE, name VARCHAR(255) NOT NULL, class_name VARCHAR(100) NOT NULL, token VARCHAR(50) NOT NULL, status ENUM('LULUS', 'TIDAK LULUS') DEFAULT 'LULUS')`);
     await db.query(`CREATE TABLE IF NOT EXISTS admins (id INT PRIMARY KEY AUTO_INCREMENT, username VARCHAR(100) NOT NULL UNIQUE, password VARCHAR(255) NOT NULL)`);
 
+    // Seed Defaults
     const [rows] = await db.query('SELECT count(*) as count FROM settings');
     if (rows[0].count === 0) {
       await db.query('INSERT INTO settings (school_name) VALUES (?)', ['MA NU 01 Banyuputih']);
@@ -65,12 +67,18 @@ const initDB = async () => {
 
     const [adminRows] = await db.query('SELECT count(*) as count FROM admins');
     if (adminRows[0].count === 0) {
-      await db.query('INSERT INTO admins (username, password) VALUES (?, ?)', ['manubyp', 'Mansaba1985']);
+      await db.query('INSERT INTO admins (username, password) VALUES (?, ?)', ['admin', 'admin123']);
+      console.log('👤 Admin default dibuat: admin / admin123');
     }
 
     console.log('✅ Server & Database Terkoneksi!');
   } catch (err) {
-    console.error('❌ DB ERROR:', err.message);
+    if (retries > 0) {
+      console.log(`⏳ Database belum siap, mencoba lagi dalam 5 detik... (${retries} sisa percobaan)`);
+      setTimeout(() => initDB(retries - 1), 5000);
+    } else {
+      console.error('❌ DB ERROR:', err.message);
+    }
   }
 };
 
