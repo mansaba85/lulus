@@ -92,5 +92,18 @@ export const api = {
     const res = await fetch(`${API_URL}/students/search/${token}`);
     if (res.status === 404) return null;
     return res.json();
+  },
+  updateAdmin: async (data) => {
+    const res = await fetch(`${API_URL}/admin/update`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+    return res.json();
+  },
+
+  getAdmin: async () => {
+    const res = await fetch(`${API_URL}/admin`);
+    return res.json();
   }
 };

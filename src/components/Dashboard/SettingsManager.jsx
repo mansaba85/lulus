@@ -14,6 +14,7 @@ import {
   EyeOff 
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { api } from '../../utils/api';
 
 const SettingsManager = ({ 
   schoolName, setSchoolName, 
@@ -24,9 +25,24 @@ const SettingsManager = ({
 }) => {
   const fileInputRef = React.useRef(null);
   const [showPassword, setShowPassword] = React.useState(false);
-  const [adminUsername, setAdminUsername] = React.useState('admin');
-  const [adminPassword, setAdminPassword] = React.useState('admin123');
+  const [adminUsername, setAdminUsername] = React.useState('');
+  const [adminPassword, setAdminPassword] = React.useState('');
   const [adminName, setAdminName] = React.useState('Administrator Utama');
+
+  React.useEffect(() => {
+    const fetchAdminData = async () => {
+      try {
+        const data = await api.getAdmin();
+        if (data) {
+          setAdminUsername(data.username || 'admin');
+          setAdminPassword(data.password || '');
+        }
+      } catch (err) {
+        console.error('Failed to fetch admin data');
+      }
+    };
+    fetchAdminData();
+  }, []);
 
   const handleLogoChange = (e) => {
     const file = e.target.files[0];
@@ -36,6 +52,19 @@ const SettingsManager = ({
         setSchoolLogo(reader.result);
       };
       reader.readAsDataURL(file);
+    }
+  };
+
+  const onUpdateAdmin = async () => {
+    try {
+      const res = await api.updateAdmin({ username: adminUsername, password: adminPassword });
+      if (res.success) {
+        toast.success('Profil admin berhasil diperbarui!');
+      } else {
+        toast.error('Gagal memperbarui profil');
+      }
+    } catch (err) {
+      toast.error('Terjadi kesalahan saat menghubungi server');
     }
   };
 
@@ -60,6 +89,7 @@ const SettingsManager = ({
                   <img src={schoolLogo} alt="Logo Sekolah" style={{ width: '100%', height: '100%', objectFit: 'contain', padding: '5px' }} />
                 </div>
                 <button 
+                  type="button"
                   onClick={() => fileInputRef.current.click()}
                   style={{ position: 'absolute', bottom: '-5px', right: '-5px', width: '30px', height: '30px', borderRadius: '50%', backgroundColor: 'var(--primary-green)', color: 'white', border: '2px solid white', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
                 >
@@ -70,6 +100,7 @@ const SettingsManager = ({
                 <h4 style={{ color: 'var(--text-main)', marginBottom: '0.25rem' }}>Logo Sekolah</h4>
                 <p style={{ fontSize: '0.8rem', color: '#64748b', marginBottom: '0.75rem' }}>Format PNG, JPG. Maksimal 1MB.</p>
                 <button 
+                  type="button"
                   onClick={() => fileInputRef.current.click()}
                   style={{ fontSize: '0.85rem', fontWeight: '700', color: 'var(--primary-green)', backgroundColor: 'transparent', border: 'none', padding: 0, cursor: 'pointer' }}
                 >
@@ -121,6 +152,7 @@ const SettingsManager = ({
               </div>
             </div>
             <button 
+              type="button"
               onClick={handleSaveSettings}
               style={{ width: '100%', backgroundColor: 'var(--primary-green)', color: 'white', padding: '1.25rem', borderRadius: '12px', fontWeight: '700', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem', boxShadow: '0 10px 20px rgba(15,81,50,0.2)' }}
             >
@@ -150,7 +182,7 @@ const SettingsManager = ({
                   <User size={60} color="#94a3b8" />
                 </div>
               </div>
-              <button style={{ position: 'absolute', bottom: '-10px', right: '-10px', width: '36px', height: '36px', borderRadius: '50%', backgroundColor: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 10px rgba(0,0,0,0.1)', color: 'var(--primary-green)' }}>
+              <button type="button" style={{ position: 'absolute', bottom: '-10px', right: '-10px', width: '36px', height: '36px', borderRadius: '50%', backgroundColor: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 10px rgba(0,0,0,0.1)', color: 'var(--primary-green)' }}>
                 <Camera size={18} />
               </button>
             </div>
@@ -187,22 +219,20 @@ const SettingsManager = ({
                 />
                 <Lock size={18} style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: '#cbd5e1' }} />
                 <button 
-                  onClick={() => setShowPassword(!showPassword)}
-                  style={{ position: 'absolute', right: '1rem', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', color: '#cbd5e1', cursor: 'pointer', display: 'flex', alignItems: 'center' }}
+                  type="button"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setShowPassword(!showPassword);
+                  }}
+                  style={{ position: 'absolute', right: '1rem', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', color: '#cbd5e1', cursor: 'pointer', display: 'flex', alignItems: 'center', zIndex: 10 }}
                 >
                   {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
               </div>
             </div>
             <button 
-              onClick={async () => {
-                try {
-                  await api.updateAdmin({ username: adminUsername, password: adminPassword });
-                  toast.success('Profil admin berhasil diperbarui!');
-                } catch (err) {
-                  toast.error('Gagal memperbarui profil');
-                }
-              }}
+              type="button"
+              onClick={onUpdateAdmin}
               style={{ width: '100%', backgroundColor: 'var(--primary-green)', color: 'white', padding: '1.25rem', borderRadius: '12px', fontWeight: '700', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem', boxShadow: '0 10px 20px rgba(15,81,50,0.2)' }}
             >
               <Save size={20} /> Simpan Perubahan Profil

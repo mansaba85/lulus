@@ -111,6 +111,13 @@ app.post('/api/admin/update', async (req, res) => {
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
+app.get('/api/admin', async (req, res) => {
+  try {
+    const [rows] = await db.query('SELECT username, password FROM admins WHERE id = 1');
+    res.json(rows[0] || { username: 'admin', password: '' });
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
 app.get('/api/settings', async (req, res) => {
   try {
     const [rows] = await db.query('SELECT * FROM settings ORDER BY id LIMIT 1');
