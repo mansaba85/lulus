@@ -230,9 +230,29 @@ app.put('/api/students/:id', authenticateToken, async (req, res) => {
 });
 
 app.post('/api/students/bulk', authenticateToken, async (req, res) => {
-  const values = [req.body.map(s => [s.nis, s.name, s.class_name, s.token, s.status])];
-  await db.query('INSERT INTO students (nis, name, class_name, token, status) VALUES ? ON DUPLICATE KEY UPDATE name=VALUES(name), class_name=VALUES(class_name), token=VALUES(token), status=VALUES(status)', values);
-  res.json({ success: true });
+  try {
+    const students = req.body;
+    if (!students || students.length === 0) return res.json({ success: true });
+
+    // 1. Auto-sync classes: Get unique class names from the imported data
+    const uniqueClasses = [...new Set(students.map(s => s.class_name))].filter(Boolean);
+    
+    // Insert new classes if they don't exist
+    for (const className of uniqueClasses) {
+      const [exists] = await db.query('SELECT id FROM classes WHERE name = ?', [className]);
+      if (exists.length === 0) {
+        await db.query('INSERT INTO classes (name) VALUES (?)', [className]);
+      }
+    }
+
+    // 2. Insert/Update students
+    const values = [students.map(s => [s.nis, s.name, s.class_name, s.token, s.status])];
+    await db.query('INSERT INTO students (nis, name, class_name, token, status) VALUES ? ON DUPLICATE KEY UPDATE name=VALUES(name), class_name=VALUES(class_name), token=VALUES(token), status=VALUES(status)', values);
+    
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 app.delete('/api/students/:id', authenticateToken, async (req, res) => {
