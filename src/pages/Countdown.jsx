@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { User, Globe, Monitor, Instagram, Facebook, Youtube } from 'lucide-react';
+import { User, Globe, Monitor, Smartphone } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../utils/api';
@@ -130,9 +130,9 @@ const Countdown = () => {
           paddingBottom: '2rem'
         }}>
           <div className="socials" style={{ display: 'flex', gap: '1.25rem', marginBottom: '0.5rem' }}>
-            <a href="#" style={{ color: '#94a3b8' }}><Instagram size={22} /></a>
-            <a href="#" style={{ color: '#94a3b8' }}><Facebook size={22} /></a>
-            <a href="#" style={{ color: '#94a3b8' }}><Youtube size={22} /></a>
+            <a href="#" style={{ color: '#94a3b8' }}><Globe size={22} /></a>
+            <a href="#" style={{ color: '#94a3b8' }}><Monitor size={22} /></a>
+            <a href="#" style={{ color: '#94a3b8' }}><Smartphone size={22} /></a>
           </div>
           <p style={{ fontSize: '0.7rem', color: '#94a3b8', textAlign: 'center', textTransform: 'uppercase', letterSpacing: '1px' }}>
             © 2026 - {schoolName}<br />ALL RIGHT RESERVED
