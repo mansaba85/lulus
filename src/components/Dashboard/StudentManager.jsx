@@ -13,6 +13,8 @@ import {
   MoreHorizontal
 } from 'lucide-react';
 import * as XLSX from 'xlsx';
+import { api } from '../../utils/api';
+import { toast } from 'sonner';
 
 const StudentManager = ({ classes, students, openStudentModal, handleDeleteStudent, handleImportStudents, fetchData }) => {
   const [currentPage, setCurrentPage] = useState(1);
