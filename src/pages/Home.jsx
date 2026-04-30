@@ -21,12 +21,21 @@ const Home = () => {
           setSchoolName(settings.school_name);
           setSchoolLogo(settings.school_logo || logo);
           
-          // Check countdown
-          const targetDateStr = settings.release_date.split('T')[0];
-          const targetTimeStr = settings.release_time.substring(0, 5);
-          const targetDate = new Date(`${targetDateStr}T${targetTimeStr}:00+07:00`).getTime();
+          // Robust Date Parsing
+          const releaseDate = settings.release_date.split('T')[0]; // YYYY-MM-DD
+          const releaseTime = settings.release_time; // HH:mm:ss
+          
+          const [year, month, day] = releaseDate.split('-').map(Number);
+          const [hour, minute, second] = releaseTime.split(':').map(Number);
+          
+          const targetDate = new Date(year, month - 1, day, hour, minute, second || 0).getTime();
           const now = Date.now();
+          
+          console.log('⏰ Target:', new Date(targetDate).toLocaleString());
+          console.log('⌚ Sekarang:', new Date(now).toLocaleString());
+          
           if (now < targetDate) {
+            console.log('⏳ Belum waktunya, pindah ke Countdown...');
             navigate('/countdown');
           }
         }

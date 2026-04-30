@@ -20,9 +20,15 @@ const Countdown = () => {
           setSchoolName(settings.school_name);
           setSchoolLogo(settings.school_logo || logo);
           
-          const targetDateStr = settings.release_date.split('T')[0];
-          const targetTimeStr = settings.release_time.substring(0, 5);
-          const targetDate = new Date(`${targetDateStr}T${targetTimeStr}:00+07:00`).getTime();
+          // Robust Date Parsing
+          const releaseDate = settings.release_date.split('T')[0];
+          const releaseTime = settings.release_time;
+          
+          const [year, month, day] = releaseDate.split('-').map(Number);
+          const [hour, minute, second] = releaseTime.split(':').map(Number);
+          
+          const targetDate = new Date(year, month - 1, day, hour, minute, second || 0).getTime();
+          console.log('⏳ Countdown Target:', new Date(targetDate).toLocaleString());
 
           const timer = setInterval(() => {
             const now = Date.now();
