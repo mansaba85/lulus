@@ -66,7 +66,7 @@ export const api = {
     return res.json();
   },
   bulkDeleteClasses: async (ids) => {
-    const res = await fetch(`${API_URL}/classes/bulk-delete`, {
+    const res = await fetch(`${API_URL}/bulk-classes`, {
       method: 'POST',
       headers: getHeaders(),
       body: JSON.stringify({ ids })
@@ -117,7 +117,7 @@ export const api = {
     return res.json();
   },
   bulkDeleteStudents: async (ids) => {
-    const res = await fetch(`${API_URL}/students/bulk-delete`, {
+    const res = await fetch(`${API_URL}/bulk-students`, {
       method: 'POST',
       headers: getHeaders(),
       body: JSON.stringify({ ids })

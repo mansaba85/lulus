@@ -201,7 +201,7 @@ app.post('/api/classes', authenticateToken, async (req, res) => {
   res.json({ id: result.insertId, name: req.body.name });
 });
 
-app.post('/api/classes/bulk-delete', authenticateToken, async (req, res) => {
+app.post('/api/bulk-classes', authenticateToken, async (req, res) => {
   try {
     const { ids } = req.body;
     if (!ids || !Array.isArray(ids) || ids.length === 0) return res.json({ success: true });
@@ -232,7 +232,7 @@ app.post('/api/students', authenticateToken, async (req, res) => {
   res.json({ id: result.insertId, ...req.body });
 });
 
-app.post('/api/students/bulk-delete', authenticateToken, async (req, res) => {
+app.post('/api/bulk-students', authenticateToken, async (req, res) => {
   try {
     const { ids } = req.body;
     if (!ids || !Array.isArray(ids) || ids.length === 0) return res.json({ success: true });
