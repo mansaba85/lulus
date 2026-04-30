@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Search, User, Globe, Monitor, Instagram, Facebook, Youtube } from 'lucide-react';
+import { Search, User, Globe, Monitor, Smartphone } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -156,9 +156,9 @@ const Home = () => {
           paddingBottom: '2rem'
         }}>
           <div className="socials" style={{ display: 'flex', gap: '1.5rem', marginBottom: '0.5rem' }}>
-            <a href="#" style={{ color: '#94a3b8' }}><Instagram size={24} /></a>
-            <a href="#" style={{ color: '#94a3b8' }}><Facebook size={24} /></a>
-            <a href="#" style={{ color: '#94a3b8' }}><Youtube size={24} /></a>
+            <a href="#" style={{ color: '#94a3b8' }}><Globe size={24} /></a>
+            <a href="#" style={{ color: '#94a3b8' }}><Monitor size={24} /></a>
+            <a href="#" style={{ color: '#94a3b8' }}><Smartphone size={24} /></a>
           </div>
           <p style={{ fontSize: '0.75rem', color: '#94a3b8', textAlign: 'center', textTransform: 'uppercase', letterSpacing: '1px' }}>
             © 2026 - {schoolName}<br />ALL RIGHT RESERVED
