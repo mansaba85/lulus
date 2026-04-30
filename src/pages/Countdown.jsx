@@ -90,11 +90,11 @@ const Countdown = () => {
         justifyContent: 'space-between',
         backgroundColor: '#fff'
       }}>
-        <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <header className="mobile-header-sync" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div className="logo" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-            <img src={schoolLogo} alt="Logo" style={{ width: '50px', height: '50px', objectFit: 'contain' }} />
+            <img src={schoolLogo} alt="Logo" style={{ width: '45px', height: '45px', objectFit: 'contain' }} />
           </div>
-          <nav style={{ display: 'flex', gap: '2rem', alignItems: 'center', fontWeight: '500' }}>
+          <nav style={{ display: 'flex', gap: '1.5rem', alignItems: 'center', fontWeight: '500' }}>
             <a href="/" style={{ color: 'var(--text-main)' }}>Home</a>
             <a href="/informasi" style={{ color: 'var(--text-main)' }}>Informasi</a>
             <a href="/admin" className="flex-center" style={{ color: 'var(--text-main)', fontSize: '1.2rem' }}>
@@ -107,13 +107,13 @@ const Countdown = () => {
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.6 }}
-          style={{ textAlign: 'center', margin: 'auto' }}
+          style={{ textAlign: 'center', margin: 'auto', width: '100%' }}
         >
-          <h2 style={{ fontSize: '2rem', fontWeight: '800', color: 'var(--text-main)', marginBottom: '3rem', textTransform: 'uppercase', letterSpacing: '1px' }}>
+          <h2 className="countdown-title" style={{ fontSize: '2.5rem', fontWeight: '800', color: 'var(--text-main)', marginBottom: '2.5rem', textTransform: 'uppercase', letterSpacing: '1px', lineHeight: 1.2 }}>
             MENUJU<br />PENGUMUMAN<br />KELULUSAN
           </h2>
           
-          <div style={{ display: 'flex', gap: '1.5rem', justifyContent: 'center' }}>
+          <div className="timer-container" style={{ display: 'flex', gap: '1rem', justifyContent: 'center', width: '100%' }}>
             <TimerCard value={timeLeft.days} label="Hari" />
             <TimerCard value={timeLeft.hours} label="Jam" />
             <TimerCard value={timeLeft.minutes} label="Menit" />
@@ -121,21 +121,20 @@ const Countdown = () => {
           </div>
         </motion.main>
 
-        {/* Footer */}
-        <footer style={{ 
+        <footer className="mobile-footer-sync" style={{ 
           display: 'flex', 
           flexDirection: 'column',
           alignItems: 'center',
           gap: '1rem',
-          marginTop: '3rem',
+          marginTop: '2rem',
           paddingBottom: '2rem'
         }}>
-          <div className="socials" style={{ display: 'flex', gap: '1.5rem', marginBottom: '0.5rem' }}>
-            <a href="#" style={{ color: '#94a3b8' }}><Instagram size={24} /></a>
-            <a href="#" style={{ color: '#94a3b8' }}><Facebook size={24} /></a>
-            <a href="#" style={{ color: '#94a3b8' }}><Youtube size={24} /></a>
+          <div className="socials" style={{ display: 'flex', gap: '1.25rem', marginBottom: '0.5rem' }}>
+            <a href="#" style={{ color: '#94a3b8' }}><Instagram size={22} /></a>
+            <a href="#" style={{ color: '#94a3b8' }}><Facebook size={22} /></a>
+            <a href="#" style={{ color: '#94a3b8' }}><Youtube size={22} /></a>
           </div>
-          <p style={{ fontSize: '0.75rem', color: '#94a3b8', textAlign: 'center', textTransform: 'uppercase', letterSpacing: '1px' }}>
+          <p style={{ fontSize: '0.7rem', color: '#94a3b8', textAlign: 'center', textTransform: 'uppercase', letterSpacing: '1px' }}>
             © 2026 - {schoolName}<br />ALL RIGHT RESERVED
           </p>
         </footer>
@@ -157,33 +156,22 @@ const Countdown = () => {
           .content-side { min-height: 100vh !important; padding: 2rem !important; }
         }
         @media (max-width: 640px) {
-          .content-side { padding: 1.5rem !important; gap: 2rem !important; }
-          header { 
-            margin-bottom: 3rem !important; 
-            display: flex !important;
+          .content-side { padding: 1.5rem !important; }
+          .mobile-header-sync { 
+            margin-bottom: 2.5rem !important; 
             flex-direction: row !important; 
             flex-wrap: nowrap !important;
             justify-content: space-between !important; 
             align-items: center !important; 
             gap: 0.5rem !important; 
           }
-          nav { 
-            gap: 0.85rem !important; 
-            width: auto !important; 
-            flex-shrink: 0 !important;
-            justify-content: flex-end !important; 
-            font-size: 0.85rem !important; 
-          }
+          nav { gap: 0.85rem !important; font-size: 0.85rem !important; }
           nav a { white-space: nowrap !important; }
-          main h2 { fontSize: 1.3rem !important; margin-bottom: 2rem !important; }
-          .timer-box { width: 70px !important; height: 80px !important; }
-          .timer-box span { fontSize: 2rem !important; }
-          footer { 
-            flex-direction: column !important; 
-            gap: 1.5rem !important; 
-            align-items: center !important; 
-            text-align: center !important;
-          }
+          .countdown-title { fontSize: 1.5rem !important; margin-bottom: 2rem !important; }
+          .timer-container { gap: 0.4rem !important; }
+          .timer-box { width: 68px !important; height: 78px !important; }
+          .timer-box span { fontSize: 1.8rem !important; }
+          .mobile-footer-sync { margin-top: 2rem !important; }
         }
       `}</style>
     </div>
