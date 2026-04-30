@@ -191,8 +191,8 @@ const Home = () => {
         }
         @media (max-width: 640px) {
           .content-side { padding: 1.5rem !important; gap: 2rem !important; }
-          header { margin-bottom: 2rem !important; flex-direction: column !important; gap: 1rem !important; align-items: flex-start !important; }
-          nav { gap: 1.25rem !important; width: 100% !important; justify-content: flex-start !important; }
+          header { margin-bottom: 2.5rem !important; flex-direction: row !important; justify-content: space-between !important; align-items: center !important; gap: 1rem !important; }
+          nav { gap: 1rem !important; width: auto !important; justify-content: flex-end !important; font-size: 0.9rem !important; }
           h1 { fontSize: 2.25rem !important; }
           h2 { fontSize: 1.1rem !important; }
           p { fontSize: 1rem !important; margin-bottom: 2rem !important; }
