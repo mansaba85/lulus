@@ -58,7 +58,7 @@ const initDB = async (retries = 5) => {
       )
     `);
 
-    await db.query(`CREATE TABLE IF NOT EXISTS classes (id INT PRIMARY KEY AUTO_INCREMENT, name VARCHAR(100) NOT NULL)`);
+    await db.query(`CREATE TABLE IF NOT EXISTS classes (id INT PRIMARY KEY AUTO_INCREMENT, name VARCHAR(100) NOT NULL UNIQUE)`);
     await db.query(`CREATE TABLE IF NOT EXISTS students (id INT PRIMARY KEY AUTO_INCREMENT, nis VARCHAR(50) NOT NULL UNIQUE, name VARCHAR(255) NOT NULL, class_name VARCHAR(100) NOT NULL, token VARCHAR(50) NOT NULL, status ENUM('LULUS', 'TIDAK LULUS') DEFAULT 'LULUS')`);
     await db.query(`CREATE TABLE IF NOT EXISTS admins (id INT PRIMARY KEY AUTO_INCREMENT, username VARCHAR(100) NOT NULL UNIQUE, password VARCHAR(255) NOT NULL, fullname VARCHAR(255) DEFAULT 'Administrator Utama')`);
 
@@ -237,12 +237,9 @@ app.post('/api/students/bulk', authenticateToken, async (req, res) => {
     // 1. Auto-sync classes: Get unique class names from the imported data
     const uniqueClasses = [...new Set(students.map(s => s.class_name))].filter(Boolean);
     
-    // Insert new classes if they don't exist
-    for (const className of uniqueClasses) {
-      const [exists] = await db.query('SELECT id FROM classes WHERE name = ?', [className]);
-      if (exists.length === 0) {
-        await db.query('INSERT INTO classes (name) VALUES (?)', [className]);
-      }
+    if (uniqueClasses.length > 0) {
+      const classValues = uniqueClasses.map(name => [name]);
+      await db.query('INSERT IGNORE INTO classes (name) VALUES ?', [classValues]);
     }
 
     // 2. Insert/Update students
