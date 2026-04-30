@@ -151,21 +151,16 @@ const Home = () => {
           display: 'flex', 
           flexDirection: 'column',
           alignItems: 'center',
-          gap: '1.5rem',
-          marginTop: '2rem'
+          gap: '1rem',
+          marginTop: '3rem',
+          paddingBottom: '2rem'
         }}>
-          <div className="socials" style={{ display: 'flex', gap: '1.5rem' }}>
-            <a href="#" className="flex-center" style={{ width: '40px', height: '40px', borderRadius: '50%', border: '1px solid #f1f5f9', color: '#64748b', transition: 'all 0.3s' }}>
-              <Instagram size={20} />
-            </a>
-            <a href="#" className="flex-center" style={{ width: '40px', height: '40px', borderRadius: '50%', border: '1px solid #f1f5f9', color: '#64748b', transition: 'all 0.3s' }}>
-              <Facebook size={20} />
-            </a>
-            <a href="#" className="flex-center" style={{ width: '40px', height: '40px', borderRadius: '50%', border: '1px solid #f1f5f9', color: '#64748b', transition: 'all 0.3s' }}>
-              <Youtube size={20} />
-            </a>
+          <div className="socials" style={{ display: 'flex', gap: '1.5rem', marginBottom: '0.5rem' }}>
+            <a href="#" style={{ color: '#94a3b8' }}><Instagram size={24} /></a>
+            <a href="#" style={{ color: '#94a3b8' }}><Facebook size={24} /></a>
+            <a href="#" style={{ color: '#94a3b8' }}><Youtube size={24} /></a>
           </div>
-          <p style={{ fontSize: '0.75rem', color: '#cbd5e1', textAlign: 'center', textTransform: 'uppercase', letterSpacing: '1px', lineHeight: 1.6 }}>
+          <p style={{ fontSize: '0.75rem', color: '#94a3b8', textAlign: 'center', textTransform: 'uppercase', letterSpacing: '1px' }}>
             © 2026 - {schoolName}<br />ALL RIGHT RESERVED
           </p>
         </footer>
