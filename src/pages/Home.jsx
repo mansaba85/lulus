@@ -191,11 +191,26 @@ const Home = () => {
         }
         @media (max-width: 640px) {
           .content-side { padding: 1.5rem !important; gap: 2rem !important; }
-          header { margin-bottom: 2.5rem !important; flex-direction: row !important; justify-content: space-between !important; align-items: center !important; gap: 1rem !important; }
-          nav { gap: 1rem !important; width: auto !important; justify-content: flex-end !important; font-size: 0.9rem !important; }
-          h1 { fontSize: 2.25rem !important; }
-          h2 { fontSize: 1.1rem !important; }
-          p { fontSize: 1rem !important; margin-bottom: 2rem !important; }
+          header { 
+            margin-bottom: 2.5rem !important; 
+            display: flex !important;
+            flex-direction: row !important; 
+            flex-wrap: nowrap !important;
+            justify-content: space-between !important; 
+            align-items: center !important; 
+            gap: 0.5rem !important; 
+          }
+          nav { 
+            gap: 0.85rem !important; 
+            width: auto !important; 
+            flex-shrink: 0 !important;
+            justify-content: flex-end !important; 
+            font-size: 0.85rem !important; 
+          }
+          nav a { white-space: nowrap !important; }
+          h1 { fontSize: 2.1rem !important; }
+          h2 { fontSize: 1rem !important; }
+          p { fontSize: 0.95rem !important; margin-bottom: 1.5rem !important; }
           .search-box { border-radius: 16px !important; flex-direction: column !important; background: transparent !important; box-shadow: none !important; border: none !important; gap: 0.75rem !important; }
           .search-box input { width: 100% !important; border-radius: 12px !important; border: 1px solid #ddd !important; padding: 1rem !important; }
           .search-box button { width: 100% !important; border-radius: 12px !important; justify-content: center !important; padding: 1rem !important; }
