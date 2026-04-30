@@ -28,8 +28,9 @@ function App() {
       try {
         const settings = await api.getSettings();
         if (settings) {
-          // Update Favicon
+          // Update Favicon & LocalStorage
           if (settings.school_logo) {
+            localStorage.setItem('schoolLogo', settings.school_logo);
             let link = document.querySelector("link[rel~='icon']");
             if (!link) {
               link = document.createElement('link');
@@ -39,8 +40,9 @@ function App() {
             link.href = settings.school_logo;
           }
           
-          // Update Page Title
+          // Update Page Title & LocalStorage
           if (settings.school_name) {
+            localStorage.setItem('schoolName', settings.school_name);
             document.title = `Kelulusan - ${settings.school_name}`;
           }
         }

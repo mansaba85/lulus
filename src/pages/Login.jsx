@@ -12,8 +12,21 @@ const Login = () => {
   const [formData, setFormData] = useState({ username: '', password: '' });
   const [isLoading, setIsLoading] = useState(false);
 
-  const schoolName = localStorage.getItem('schoolName') || 'MA NU 01 BANYUPUTIH';
-  const schoolLogo = localStorage.getItem('schoolLogo') || logo;
+  const [schoolName, setSchoolName] = useState(localStorage.getItem('schoolName') || 'MA NU 01 BANYUPUTIH');
+  const [schoolLogo, setSchoolLogo] = useState(localStorage.getItem('schoolLogo') || logo);
+
+  React.useEffect(() => {
+    const syncBranding = async () => {
+      try {
+        const settings = await api.getSettings();
+        if (settings) {
+          if (settings.school_name) setSchoolName(settings.school_name);
+          if (settings.school_logo) setSchoolLogo(settings.school_logo);
+        }
+      } catch (e) { console.error(e); }
+    };
+    syncBranding();
+  }, []);
 
   const handleLogin = async (e) => {
     e.preventDefault();
