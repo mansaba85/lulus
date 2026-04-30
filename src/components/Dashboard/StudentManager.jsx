@@ -43,7 +43,7 @@ const StudentManager = ({ classes, students, openStudentModal, handleDeleteStude
   
   // Filtering Logic
   const filteredStudents = students.filter(student => 
-    selectedClass === 'Semua Kelas' || student.class === selectedClass
+    selectedClass === 'Semua Kelas' || (student.class_name || student.class) === selectedClass
   );
 
   const totalEntries = filteredStudents.length;
@@ -183,7 +183,7 @@ const StudentManager = ({ classes, students, openStudentModal, handleDeleteStude
                     <span style={{ fontWeight: '700', color: 'var(--primary-green)', fontSize: '0.95rem' }}>{student.name}</span>
                   </div>
                 </td>
-                <td style={{ padding: '1.25rem 1rem', fontSize: '0.9rem', color: '#64748b', fontWeight: '600' }}>{student.class}</td>
+                <td style={{ padding: '1.25rem 1rem', fontSize: '0.9rem', color: '#64748b', fontWeight: '600' }}>{student.class_name || student.class}</td>
                 <td style={{ padding: '1.25rem 1rem' }}>
                   <code style={{ backgroundColor: '#f1f5f9', padding: '0.4rem 0.6rem', borderRadius: '6px', fontSize: '0.85rem', fontWeight: '700', color: '#475569' }}>{student.token}</code>
                 </td>
