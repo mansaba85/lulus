@@ -96,7 +96,7 @@ const Result = () => {
                   </div>
                   <div>
                     <label style={{ fontSize: '0.8rem', color: '#64748b' }}>Kelas</label>
-                    <p style={{ fontSize: '1.1rem', fontWeight: '700', color: '#1e293b' }}>{student.class}</p>
+                    <p style={{ fontSize: '1.1rem', fontWeight: '700', color: '#1e293b' }}>{student.class_name || student.class}</p>
                   </div>
                 </div>
               </div>
