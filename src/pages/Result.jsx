@@ -102,12 +102,14 @@ const Result = () => {
               </div>
 
               <div style={{ marginTop: '3rem', display: 'flex', gap: '1rem' }}>
-                <button 
-                  onClick={() => window.print()}
-                  style={{ flex: 1, padding: '1rem', backgroundColor: 'var(--primary-green)', color: 'white', borderRadius: '14px', fontWeight: '700', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem', boxShadow: '0 10px 20px rgba(15,81,50,0.15)' }}
-                >
-                  <Printer size={20} /> Cetak SKL
-                </button>
+                {student.status === 'LULUS' && (
+                  <button 
+                    onClick={() => window.print()}
+                    style={{ flex: 1, padding: '1rem', backgroundColor: 'var(--primary-green)', color: 'white', borderRadius: '14px', fontWeight: '700', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem', boxShadow: '0 10px 20px rgba(15,81,50,0.15)' }}
+                  >
+                    <Printer size={20} /> Cetak SKL
+                  </button>
+                )}
                 <button 
                   onClick={() => navigate('/')}
                   style={{ padding: '1rem', backgroundColor: '#f1f5f9', color: '#64748b', borderRadius: '14px', fontWeight: '700', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
@@ -139,9 +141,8 @@ const Result = () => {
               ) : (
                 <>
                   <div style={{ color: '#ef4444', marginBottom: '1.5rem' }}><XCircle size={80} /></div>
-                  <h3 style={{ fontSize: '1.5rem', fontWeight: '800', color: '#991b1b', marginBottom: '0.5rem' }}>MAAF</h3>
-                  <p style={{ color: '#b91c1c', fontWeight: '600' }}>Anda Dinyatakan</p>
-                  <div style={{ backgroundColor: '#ef4444', color: 'white', padding: '0.5rem 1.5rem', borderRadius: '50px', fontSize: '1.2rem', fontWeight: '900', marginTop: '1rem' }}>TIDAK LULUS</div>
+                  <h3 style={{ fontSize: '1.5rem', fontWeight: '800', color: '#991b1b', marginBottom: '1rem' }}>MAAF</h3>
+                  <p style={{ color: '#64748b', fontSize: '1.1rem', fontWeight: '600' }}>Silakan hubungi wali kelas</p>
                 </>
               )}
             </div>
