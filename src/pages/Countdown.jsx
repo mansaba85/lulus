@@ -20,8 +20,9 @@ const Countdown = () => {
           setSchoolName(settings.school_name);
           setSchoolLogo(settings.school_logo || logo);
           
-          // Robust Date Parsing
-          const releaseDate = settings.release_date.split('T')[0];
+          // Robust Date Parsing (Handle UTC shift from DB)
+          const d = new Date(settings.release_date);
+          const releaseDate = d.toLocaleDateString('en-CA');
           const releaseTime = settings.release_time;
           
           const [year, month, day] = releaseDate.split('-').map(Number);

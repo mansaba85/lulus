@@ -21,8 +21,9 @@ const Home = () => {
           setSchoolName(settings.school_name);
           setSchoolLogo(settings.school_logo || logo);
           
-          // Robust Date Parsing
-          const releaseDate = settings.release_date.split('T')[0]; // YYYY-MM-DD
+          // Robust Date Parsing (Handle UTC shift from DB)
+          const d = new Date(settings.release_date);
+          const releaseDate = d.toLocaleDateString('en-CA'); // Gets YYYY-MM-DD in local timezone
           const releaseTime = settings.release_time; // HH:mm:ss
           
           const [year, month, day] = releaseDate.split('-').map(Number);
