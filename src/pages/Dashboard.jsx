@@ -14,6 +14,7 @@ import InfoManager from '../components/Dashboard/InfoManager';
 import ClassModal from '../components/Dashboard/ClassModal';
 import StudentModal from '../components/Dashboard/StudentModal';
 import DeleteModal from '../components/Dashboard/DeleteModal';
+import ImportPreviewModal from '../components/Dashboard/ImportPreviewModal';
 import { api } from '../utils/api';
 import * as XLSX from 'xlsx';
 
@@ -79,6 +80,8 @@ const Dashboard = () => {
   const [studentForm, setStudentForm] = useState({ nis: '', name: '', class: '', token: '', status: 'LULUS' });
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState(null);
+  const [importData, setImportData] = useState([]);
+  const [isImportPreviewOpen, setIsImportPreviewOpen] = useState(false);
 
   // Data Fetching
   const fetchData = async () => {
@@ -234,35 +237,33 @@ const Dashboard = () => {
     setIsDeleteModalOpen(true);
   };
 
-  const handleImportStudents = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
+  const handleImportStudents = (data) => {
+    if (!data || data.length === 0) return;
 
-    const reader = new FileReader();
-    reader.onload = async (evt) => {
-      const bstr = evt.target.result;
-      const wb = XLSX.read(bstr, { type: 'binary' });
-      const wsname = wb.SheetNames[0];
-      const ws = wb.Sheets[wsname];
-      const data = XLSX.utils.sheet_to_json(ws);
+    const formatted = data.map(s => ({
+      nis: (s.NIS || s.nis || '').toString(),
+      name: s.Nama || s.nama || '',
+      class_name: s.Kelas || s.kelas || classes[0]?.name || '',
+      token: (s.Token || s.token || Math.random().toString(36).substring(2, 7).toUpperCase()),
+      status: (s.Status || s.status || 'LULUS').toUpperCase()
+    }));
 
-      const formatted = data.map(s => ({
-        nis: (s.NIS || s.nis || '').toString(),
-        name: s.Nama || s.nama || '',
-        class_name: s.Kelas || s.kelas || classes[0]?.name || '',
-        token: (s.Token || s.token || Math.random().toString(36).substring(2, 7).toUpperCase()),
-        status: (s.Status || s.status || 'LULUS').toUpperCase()
-      }));
+    setImportData(formatted);
+    setIsImportPreviewOpen(true);
+  };
 
-      try {
-        await api.bulkImportStudents(formatted);
-        toast.success(`${formatted.length} data siswa berhasil diimpor!`);
-        fetchData();
-      } catch (err) {
-        toast.error('Gagal mengimpor data');
-      }
-    };
-    reader.readAsBinaryString(file);
+  const executeImport = async () => {
+    try {
+      const loadingToast = toast.loading(`Mengimpor ${importData.length} data siswa...`);
+      await api.bulkImportStudents(importData);
+      toast.dismiss(loadingToast);
+      toast.success(`${importData.length} data siswa berhasil diimpor!`);
+      fetchData();
+      setIsImportPreviewOpen(false);
+      setImportData([]);
+    } catch (err) {
+      toast.error('Gagal mengimpor data. Pastikan format Excel benar.');
+    }
   };
 
   const executeDelete = async () => {
@@ -391,6 +392,13 @@ const Dashboard = () => {
           onClose={() => setIsDeleteModalOpen(false)}
           onConfirm={executeDelete}
           targetName={deleteTarget?.name}
+        />
+
+        <ImportPreviewModal 
+          isOpen={isImportPreviewOpen}
+          onClose={() => setIsImportPreviewOpen(false)}
+          onConfirm={executeImport}
+          data={importData}
         />
 
         <style>{`
