@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Search, User, Globe, Monitor } from 'lucide-react';
+import { Search, User, Globe, Monitor, Instagram, Facebook, Youtube } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -147,16 +147,25 @@ const Home = () => {
         </motion.main>
 
         {/* Footer */}
-        <footer style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <div className="socials" style={{ display: 'flex', gap: '1rem' }}>
-            <a href="#" className="flex-center" style={{ width: '32px', height: '32px', borderRadius: '50%', border: '1px solid #ddd' }}>
-              <Globe size={16} />
+        <footer style={{ 
+          display: 'flex', 
+          flexDirection: 'column',
+          alignItems: 'center',
+          gap: '1.5rem',
+          marginTop: '2rem'
+        }}>
+          <div className="socials" style={{ display: 'flex', gap: '1.5rem' }}>
+            <a href="#" className="flex-center" style={{ width: '40px', height: '40px', borderRadius: '50%', border: '1px solid #f1f5f9', color: '#64748b', transition: 'all 0.3s' }}>
+              <Instagram size={20} />
             </a>
-            <a href="#" className="flex-center" style={{ width: '32px', height: '32px', borderRadius: '50%', border: '1px solid #ddd' }}>
-              <Monitor size={16} />
+            <a href="#" className="flex-center" style={{ width: '40px', height: '40px', borderRadius: '50%', border: '1px solid #f1f5f9', color: '#64748b', transition: 'all 0.3s' }}>
+              <Facebook size={20} />
+            </a>
+            <a href="#" className="flex-center" style={{ width: '40px', height: '40px', borderRadius: '50%', border: '1px solid #f1f5f9', color: '#64748b', transition: 'all 0.3s' }}>
+              <Youtube size={20} />
             </a>
           </div>
-          <p style={{ fontSize: '0.75rem', color: '#aaa', textAlign: 'right', textTransform: 'uppercase' }}>
+          <p style={{ fontSize: '0.75rem', color: '#cbd5e1', textAlign: 'center', textTransform: 'uppercase', letterSpacing: '1px', lineHeight: 1.6 }}>
             © 2026 - {schoolName}<br />ALL RIGHT RESERVED
           </p>
         </footer>
@@ -214,8 +223,13 @@ const Home = () => {
           .search-box { border-radius: 16px !important; flex-direction: column !important; background: transparent !important; box-shadow: none !important; border: none !important; gap: 0.75rem !important; }
           .search-box input { width: 100% !important; border-radius: 12px !important; border: 1px solid #ddd !important; padding: 1rem !important; }
           .search-box button { width: 100% !important; border-radius: 12px !important; justify-content: center !important; padding: 1rem !important; }
-          footer { flex-direction: column !important; gap: 1.5rem !important; align-items: flex-start !important; }
-          footer p { text-align: left !important; }
+          footer { 
+            flex-direction: column !important; 
+            gap: 1.5rem !important; 
+            align-items: center !important; 
+            text-align: center !important;
+          }
+          footer p { text-align: center !important; }
         }
       `}</style>
     </div>
