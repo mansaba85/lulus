@@ -71,6 +71,10 @@ export const api = {
       headers: getHeaders(),
       body: JSON.stringify({ ids })
     });
+    if (!res.ok) {
+      const errorData = await res.json();
+      throw new Error(errorData.error || 'Gagal menghapus kelas massal');
+    }
     return res.json();
   },
 
@@ -118,6 +122,10 @@ export const api = {
       headers: getHeaders(),
       body: JSON.stringify({ ids })
     });
+    if (!res.ok) {
+      const errorData = await res.json();
+      throw new Error(errorData.error || 'Gagal menghapus siswa massal');
+    }
     return res.json();
   },
   searchStudent: async (token) => {

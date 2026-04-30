@@ -260,19 +260,32 @@ app.delete('/api/students/:id', authenticateToken, async (req, res) => {
 app.post('/api/students/bulk-delete', authenticateToken, async (req, res) => {
   try {
     const { ids } = req.body;
-    if (!ids || ids.length === 0) return res.json({ success: true });
+    console.log('🗑️ Menghapus massal siswa ID:', ids);
+    if (!ids || !Array.isArray(ids) || ids.length === 0) {
+      return res.json({ success: true, message: 'Tidak ada ID untuk dihapus' });
+    }
+    // Menggunakan format [ids] karena mysql2 akan mengubahnya menjadi (id1, id2, ...)
     await db.query('DELETE FROM students WHERE id IN (?)', [ids]);
     res.json({ success: true });
-  } catch (err) { res.status(500).json({ error: err.message }); }
+  } catch (err) { 
+    console.error('❌ Bulk Delete Error (Siswa):', err.message);
+    res.status(500).json({ error: err.message }); 
+  }
 });
 
 app.post('/api/classes/bulk-delete', authenticateToken, async (req, res) => {
   try {
     const { ids } = req.body;
-    if (!ids || ids.length === 0) return res.json({ success: true });
+    console.log('🗑️ Menghapus massal kelas ID:', ids);
+    if (!ids || !Array.isArray(ids) || ids.length === 0) {
+      return res.json({ success: true, message: 'Tidak ada ID untuk dihapus' });
+    }
     await db.query('DELETE FROM classes WHERE id IN (?)', [ids]);
     res.json({ success: true });
-  } catch (err) { res.status(500).json({ error: err.message }); }
+  } catch (err) { 
+    console.error('❌ Bulk Delete Error (Kelas):', err.message);
+    res.status(500).json({ error: err.message }); 
+  }
 });
 
 // Public Search Route (Siswa check status)

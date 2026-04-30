@@ -22,6 +22,20 @@ const StudentManager = ({ classes, students, openStudentModal, handleDeleteStude
 
   const fileInputRef = React.useRef(null);
 
+  // Filtering Logic
+  const filteredStudents = students.filter(student => 
+    selectedClass === 'Semua Kelas' || (student.class_name || student.class) === selectedClass
+  );
+
+  const totalEntries = filteredStudents.length;
+  const totalPages = Math.ceil(totalEntries / rowsPerPage);
+  
+  // Slicing data based on pagination
+  const currentData = filteredStudents.slice(
+    (currentPage - 1) * rowsPerPage, 
+    currentPage * rowsPerPage
+  );
+
   // Selection Logic
   const toggleSelectAll = () => {
     if (selectedIds.length === currentData.length) {
@@ -45,7 +59,7 @@ const StudentManager = ({ classes, students, openStudentModal, handleDeleteStude
         setSelectedIds([]);
         fetchData();
       } catch (err) {
-        toast.error('Gagal menghapus data massal');
+        toast.error('Gagal menghapus data massal: ' + err.message);
       }
     }
   };
@@ -69,20 +83,6 @@ const StudentManager = ({ classes, students, openStudentModal, handleDeleteStude
     };
     reader.readAsBinaryString(file);
   };
-  
-  // Filtering Logic
-  const filteredStudents = students.filter(student => 
-    selectedClass === 'Semua Kelas' || (student.class_name || student.class) === selectedClass
-  );
-
-  const totalEntries = filteredStudents.length;
-  const totalPages = Math.ceil(totalEntries / rowsPerPage);
-  
-  // Slicing data based on pagination
-  const currentData = filteredStudents.slice(
-    (currentPage - 1) * rowsPerPage, 
-    currentPage * rowsPerPage
-  );
 
   const handleClassChange = (e) => {
     setSelectedClass(e.target.value);
