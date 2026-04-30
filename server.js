@@ -122,17 +122,13 @@ const authenticateToken = (req, res, next) => {
   });
 };
 
-// Middleware to check DB readiness
-app.use('/api', (req, res, next) => {
-  if (!db && req.path !== '/login') {
-    return res.status(503).json({ error: 'Database sedang bersiap, silakan coba lagi dalam beberapa detik...' });
-  }
-  next();
-});
+// --- API Router ---
+const apiRouter = express.Router();
 
-// --- API ---
+// Public Ping for Debug
+apiRouter.get('/ping', (req, res) => res.json({ message: 'pong', time: new Date() }));
 
-app.post('/api/login', async (req, res) => {
+apiRouter.post('/login', async (req, res) => {
   const { username, password } = req.body;
   try {
     const [rows] = await db.query('SELECT * FROM admins WHERE username = ?', [username]);
@@ -150,8 +146,37 @@ app.post('/api/login', async (req, res) => {
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
-// Protected Admin Routes
-app.post('/api/admin/update', authenticateToken, async (req, res) => {
+// Settings
+apiRouter.get('/settings', async (req, res) => {
+  try {
+    const [rows] = await db.query('SELECT * FROM settings ORDER BY id LIMIT 1');
+    res.json(rows[0] || {});
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+apiRouter.post('/settings', authenticateToken, async (req, res) => {
+  const { school_name, release_date, release_time, school_logo } = req.body;
+  try {
+    const cleanDate = release_date ? release_date.split('T')[0] : '2026-05-15';
+    const cleanTime = release_time ? (release_time.length === 5 ? `${release_time}:00` : release_time) : '10:00:00';
+    
+    await db.query(
+      'UPDATE settings SET school_name = ?, release_date = ?, release_time = ?, school_logo = ? ORDER BY id LIMIT 1',
+      [school_name, cleanDate, cleanTime, school_logo]
+    );
+    res.json({ success: true });
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+// Admin
+apiRouter.get('/admin', authenticateToken, async (req, res) => {
+  try {
+    const [rows] = await db.query('SELECT username, fullname FROM admins WHERE id = 1');
+    res.json(rows[0] || { username: 'admin', fullname: 'Administrator Utama' });
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+apiRouter.post('/admin/update', authenticateToken, async (req, res) => {
   const { username, password, fullname } = req.body;
   try {
     let query = 'UPDATE admins SET username = ?, fullname = ? WHERE id = 1';
@@ -168,46 +193,18 @@ app.post('/api/admin/update', authenticateToken, async (req, res) => {
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
-app.get('/api/admin', authenticateToken, async (req, res) => {
-  try {
-    const [rows] = await db.query('SELECT username, fullname FROM admins WHERE id = 1');
-    res.json(rows[0] || { username: 'admin', fullname: 'Administrator Utama' });
-  } catch (err) { res.status(500).json({ error: err.message }); }
-});
-
-// Other Protected Routes
-app.get('/api/settings', async (req, res) => { // Public can see some settings for landing page if needed, but update is protected
-  try {
-    const [rows] = await db.query('SELECT * FROM settings ORDER BY id LIMIT 1');
-    res.json(rows[0] || {});
-  } catch (err) { res.status(500).json({ error: err.message }); }
-});
-
-app.post('/api/settings', authenticateToken, async (req, res) => {
-  const { school_name, release_date, release_time, school_logo } = req.body;
-  try {
-    const cleanDate = release_date ? release_date.split('T')[0] : '2026-05-15';
-    const cleanTime = release_time ? (release_time.length === 5 ? `${release_time}:00` : release_time) : '10:00:00';
-    
-    await db.query(
-      'UPDATE settings SET school_name = ?, release_date = ?, release_time = ?, school_logo = ? ORDER BY id LIMIT 1',
-      [school_name, cleanDate, cleanTime, school_logo]
-    );
-    res.json({ success: true });
-  } catch (err) { res.status(500).json({ error: err.message }); }
-});
-
-app.get('/api/classes', authenticateToken, async (req, res) => {
+// Classes
+apiRouter.get('/classes', authenticateToken, async (req, res) => {
   const [rows] = await db.query('SELECT * FROM classes');
   res.json(rows);
 });
 
-app.post('/api/classes', authenticateToken, async (req, res) => {
+apiRouter.post('/classes', authenticateToken, async (req, res) => {
   const [result] = await db.query('INSERT INTO classes (name) VALUES (?)', [req.body.name]);
   res.json({ id: result.insertId, name: req.body.name });
 });
 
-app.post('/api/bulk-classes', authenticateToken, async (req, res) => {
+apiRouter.post('/bulk-classes', authenticateToken, async (req, res) => {
   try {
     const { ids } = req.body;
     if (!ids || !Array.isArray(ids) || ids.length === 0) return res.json({ success: true });
@@ -216,29 +213,30 @@ app.post('/api/bulk-classes', authenticateToken, async (req, res) => {
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
-app.delete('/api/classes/:id', authenticateToken, async (req, res) => {
+apiRouter.delete('/classes/:id', authenticateToken, async (req, res) => {
   await db.query('DELETE FROM classes WHERE id = ?', [req.params.id]);
   res.json({ success: true });
 });
 
-app.put('/api/classes/:id', authenticateToken, async (req, res) => {
+apiRouter.put('/classes/:id', authenticateToken, async (req, res) => {
   const { name } = req.body;
   await db.query('UPDATE classes SET name = ? WHERE id = ?', [name, req.params.id]);
   res.json({ success: true });
 });
 
-app.get('/api/students', authenticateToken, async (req, res) => {
+// Students
+apiRouter.get('/students', authenticateToken, async (req, res) => {
   const [rows] = await db.query('SELECT * FROM students');
   res.json(rows);
 });
 
-app.post('/api/students', authenticateToken, async (req, res) => {
+apiRouter.post('/students', authenticateToken, async (req, res) => {
   const { nis, name, class_name, token, status } = req.body;
   const [result] = await db.query('INSERT INTO students (nis, name, class_name, token, status) VALUES (?, ?, ?, ?, ?)', [nis, name, class_name, token, status]);
   res.json({ id: result.insertId, ...req.body });
 });
 
-app.post('/api/bulk-students', authenticateToken, async (req, res) => {
+apiRouter.post('/bulk-students', authenticateToken, async (req, res) => {
   try {
     const { ids } = req.body;
     if (!ids || !Array.isArray(ids) || ids.length === 0) return res.json({ success: true });
@@ -247,13 +245,13 @@ app.post('/api/bulk-students', authenticateToken, async (req, res) => {
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
-app.put('/api/students/:id', authenticateToken, async (req, res) => {
+apiRouter.put('/students/:id', authenticateToken, async (req, res) => {
   const { nis, name, class_name, token, status } = req.body;
   await db.query('UPDATE students SET nis = ?, name = ?, class_name = ?, token = ?, status = ? WHERE id = ?', [nis, name, class_name, token, status, req.params.id]);
   res.json({ success: true });
 });
 
-app.post('/api/students/bulk', authenticateToken, async (req, res) => {
+apiRouter.post('/students/bulk', authenticateToken, async (req, res) => {
   try {
     const students = req.body;
     if (!students || students.length === 0) return res.json({ success: true });
@@ -276,19 +274,27 @@ app.post('/api/students/bulk', authenticateToken, async (req, res) => {
   }
 });
 
-app.delete('/api/students/:id', authenticateToken, async (req, res) => {
+apiRouter.delete('/students/:id', authenticateToken, async (req, res) => {
   await db.query('DELETE FROM students WHERE id = ?', [req.params.id]);
   res.json({ success: true });
 });
 
 // Public Search Route (Siswa check status)
-app.get('/api/students/search/:token', async (req, res) => {
+apiRouter.get('/students/search/:token', async (req, res) => {
   try {
     const [rows] = await db.query('SELECT * FROM students WHERE UPPER(token) = UPPER(?)', [req.params.token]);
     if (rows.length > 0) res.json(rows[0]);
     else res.status(404).json({ message: 'Not found' });
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
+
+// Finalize API
+app.use('/api', (req, res, next) => {
+  if (!db && req.path !== '/login') {
+    return res.status(503).json({ error: 'Database sedang bersiap, silakan coba lagi dalam beberapa detik...' });
+  }
+  next();
+}, apiRouter);
 
 const distPath = path.join(__dirname, 'dist');
 app.use(express.static(distPath));
