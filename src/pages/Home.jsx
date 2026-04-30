@@ -189,6 +189,19 @@ const Home = () => {
           .illustration-side { display: none !important; }
           .content-side { min-height: 100vh !important; padding: 2rem !important; }
         }
+        @media (max-width: 640px) {
+          .content-side { padding: 1.5rem !important; gap: 2rem !important; }
+          header { margin-bottom: 2rem !important; flex-direction: column !important; gap: 1rem !important; align-items: flex-start !important; }
+          nav { gap: 1.25rem !important; width: 100% !important; justify-content: flex-start !important; }
+          h1 { fontSize: 2.25rem !important; }
+          h2 { fontSize: 1.1rem !important; }
+          p { fontSize: 1rem !important; margin-bottom: 2rem !important; }
+          .search-box { border-radius: 16px !important; flex-direction: column !important; background: transparent !important; box-shadow: none !important; border: none !important; gap: 0.75rem !important; }
+          .search-box input { width: 100% !important; border-radius: 12px !important; border: 1px solid #ddd !important; padding: 1rem !important; }
+          .search-box button { width: 100% !important; border-radius: 12px !important; justify-content: center !important; padding: 1rem !important; }
+          footer { flex-direction: column !important; gap: 1.5rem !important; align-items: flex-start !important; }
+          footer p { text-align: left !important; }
+        }
       `}</style>
     </div>
   );

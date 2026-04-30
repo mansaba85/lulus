@@ -163,6 +163,16 @@ const Result = () => {
           .result-card-inner {
             padding: 1.5rem !important;
           }
+          .result-card-inner > div:first-child {
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            gap: 1rem !important;
+            text-align: left !important;
+          }
+          .result-card-inner > div:first-child img {
+            width: 60px !important;
+            height: 60px !important;
+          }
         }
         @media print {
           body * { visibility: hidden; }
