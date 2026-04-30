@@ -76,6 +76,17 @@ const initDB = async (retries = 5) => {
       const hashedPass = await bcrypt.hash('admin123', 10);
       await db.query('INSERT INTO admins (username, password, fullname) VALUES (?, ?, ?)', ['admin', hashedPass, 'Administrator Utama']);
       console.log('👤 Admin default dibuat: admin / admin123 (Hashed)');
+    } else {
+      // Auto-hash existing plain text passwords
+      const [allAdmins] = await db.query('SELECT id, username, password FROM admins');
+      for (const admin of allAdmins) {
+        if (!admin.password.startsWith('$2')) {
+          console.log(`🔒 Mengamankan password untuk user: ${admin.username}...`);
+          const hashed = await bcrypt.hash(admin.password, 10);
+          await db.query('UPDATE admins SET password = ? WHERE id = ?', [hashed, admin.id]);
+          console.log(`✅ Password user ${admin.username} berhasil di-hash.`);
+        }
+      }
     }
 
     console.log('✅ Server & Database Terkoneksi & Aman!');
