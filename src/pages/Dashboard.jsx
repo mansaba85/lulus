@@ -331,6 +331,7 @@ const Dashboard = () => {
               classes={classes} 
               openModal={openModal} 
               handleDeleteClass={confirmDeleteClass} 
+              fetchData={fetchData}
             />
           )}
 
@@ -342,6 +343,7 @@ const Dashboard = () => {
               openStudentModal={openStudentModal}
               handleDeleteStudent={confirmDeleteStudent}
               handleImportStudents={handleImportStudents}
+              fetchData={fetchData}
             />
           )}
 
@@ -403,6 +405,20 @@ const Dashboard = () => {
 
         <style>{`
         .table-row:hover { background-color: #f8fafc !important; }
+        
+        @media (max-width: 1024px) {
+          .dashboard-main { 
+            margin-left: 0 !important; 
+            width: 100% !important; 
+            padding: 1.5rem !important; 
+          }
+          .mobile-header { display: flex !important; }
+        }
+
+        @media (max-width: 640px) {
+          .dashboard-main { padding: 1rem !important; }
+          .mobile-header h2 { font-size: 1.1rem !important; }
+        }
       `}</style>
     </div>
   );

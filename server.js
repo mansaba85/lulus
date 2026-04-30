@@ -257,6 +257,24 @@ app.delete('/api/students/:id', authenticateToken, async (req, res) => {
   res.json({ success: true });
 });
 
+app.post('/api/students/bulk-delete', authenticateToken, async (req, res) => {
+  try {
+    const { ids } = req.body;
+    if (!ids || ids.length === 0) return res.json({ success: true });
+    await db.query('DELETE FROM students WHERE id IN (?)', [ids]);
+    res.json({ success: true });
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+app.post('/api/classes/bulk-delete', authenticateToken, async (req, res) => {
+  try {
+    const { ids } = req.body;
+    if (!ids || ids.length === 0) return res.json({ success: true });
+    await db.query('DELETE FROM classes WHERE id IN (?)', [ids]);
+    res.json({ success: true });
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
 // Public Search Route (Siswa check status)
 app.get('/api/students/search/:token', async (req, res) => {
   try {

@@ -65,6 +65,14 @@ export const api = {
     });
     return res.json();
   },
+  bulkDeleteClasses: async (ids) => {
+    const res = await fetch(`${API_URL}/classes/bulk-delete`, {
+      method: 'POST',
+      headers: getHeaders(),
+      body: JSON.stringify({ ids })
+    });
+    return res.json();
+  },
 
   // Students
   getStudents: async () => {
@@ -101,6 +109,14 @@ export const api = {
       method: 'POST',
       headers: getHeaders(),
       body: JSON.stringify(students)
+    });
+    return res.json();
+  },
+  bulkDeleteStudents: async (ids) => {
+    const res = await fetch(`${API_URL}/students/bulk-delete`, {
+      method: 'POST',
+      headers: getHeaders(),
+      body: JSON.stringify({ ids })
     });
     return res.json();
   },

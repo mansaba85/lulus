@@ -14,12 +14,41 @@ import {
 } from 'lucide-react';
 import * as XLSX from 'xlsx';
 
-const StudentManager = ({ classes, students, openStudentModal, handleDeleteStudent, handleImportStudents }) => {
+const StudentManager = ({ classes, students, openStudentModal, handleDeleteStudent, handleImportStudents, fetchData }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [selectedClass, setSelectedClass] = useState('Semua Kelas');
+  const [selectedIds, setSelectedIds] = useState([]);
 
   const fileInputRef = React.useRef(null);
+
+  // Selection Logic
+  const toggleSelectAll = () => {
+    if (selectedIds.length === currentData.length) {
+      setSelectedIds([]);
+    } else {
+      setSelectedIds(currentData.map(s => s.id));
+    }
+  };
+
+  const toggleSelectRow = (id) => {
+    setSelectedIds(prev => 
+      prev.includes(id) ? prev.filter(item => item !== id) : [...prev, id]
+    );
+  };
+
+  const handleBulkDelete = async () => {
+    if (window.confirm(`Hapus ${selectedIds.length} data siswa terpilih?`)) {
+      try {
+        await api.bulkDeleteStudents(selectedIds);
+        toast.success(`${selectedIds.length} data siswa berhasil dihapus`);
+        setSelectedIds([]);
+        fetchData();
+      } catch (err) {
+        toast.error('Gagal menghapus data massal');
+      }
+    }
+  };
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -58,6 +87,7 @@ const StudentManager = ({ classes, students, openStudentModal, handleDeleteStude
   const handleClassChange = (e) => {
     setSelectedClass(e.target.value);
     setCurrentPage(1); // Reset to page 1 on filter change
+    setSelectedIds([]);
   };
 
   return (
@@ -107,7 +137,15 @@ const StudentManager = ({ classes, students, openStudentModal, handleDeleteStude
             Kelola data kredensial siswa, status kelulusan, dan informasi akademik resmi.
           </p>
         </div>
-        <div className="manager-actions" style={{ display: 'flex', gap: '1rem' }}>
+        <div className="manager-actions" style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+          {selectedIds.length > 0 && (
+            <button 
+              onClick={handleBulkDelete}
+              style={{ backgroundColor: '#fee2e2', color: '#b91c1c', padding: '0.75rem 1.25rem', borderRadius: '8px', display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: '800', fontSize: '0.85rem', border: '1px solid #fecaca', cursor: 'pointer' }}
+            >
+              <Trash2 size={18} /> Hapus ({selectedIds.length})
+            </button>
+          )}
           <button 
             onClick={() => openStudentModal()}
             style={{ backgroundColor: 'var(--primary-green)', color: 'white', padding: '0.75rem 1.25rem', borderRadius: '8px', display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: '800', fontSize: '0.85rem', border: 'none', cursor: 'pointer', boxShadow: '0 4px 12px rgba(15,81,50,0.2)' }}
@@ -188,7 +226,14 @@ const StudentManager = ({ classes, students, openStudentModal, handleDeleteStude
           <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', minWidth: '800px' }}>
             <thead style={{ backgroundColor: '#f8fafc' }}>
             <tr>
-              <th style={{ padding: '1.25rem 1.5rem', color: '#94a3b8', fontWeight: '800', fontSize: '0.7rem', textTransform: 'uppercase' }}>#</th>
+              <th style={{ padding: '1.25rem 1.5rem', width: '50px' }}>
+                <input 
+                  type="checkbox" 
+                  checked={selectedIds.length === currentData.length && currentData.length > 0}
+                  onChange={toggleSelectAll}
+                  style={{ width: '18px', height: '18px', cursor: 'pointer' }}
+                />
+              </th>
               <th style={{ padding: '1.25rem 1rem', color: '#94a3b8', fontWeight: '800', fontSize: '0.7rem', textTransform: 'uppercase' }}>NIS</th>
               <th style={{ padding: '1.25rem 1rem', color: '#94a3b8', fontWeight: '800', fontSize: '0.7rem', textTransform: 'uppercase' }}>NAMA</th>
               <th style={{ padding: '1.25rem 1rem', color: '#94a3b8', fontWeight: '800', fontSize: '0.7rem', textTransform: 'uppercase' }}>KELAS</th>
@@ -199,8 +244,15 @@ const StudentManager = ({ classes, students, openStudentModal, handleDeleteStude
           </thead>
           <tbody>
             {currentData.map((student, index) => (
-              <tr key={student.id} style={{ borderBottom: '1px solid #f1f5f9', transition: 'all 0.2s' }} className="table-row">
-                <td style={{ padding: '1.25rem 1.5rem', fontSize: '0.85rem', color: '#64748b' }}>{((currentPage - 1) * rowsPerPage) + index + 1}</td>
+              <tr key={student.id} style={{ borderBottom: '1px solid #f1f5f9', transition: 'all 0.2s', backgroundColor: selectedIds.includes(student.id) ? '#f0fdf4' : 'transparent' }} className="table-row">
+                <td style={{ padding: '1.25rem 1.5rem' }}>
+                  <input 
+                    type="checkbox" 
+                    checked={selectedIds.includes(student.id)}
+                    onChange={() => toggleSelectRow(student.id)}
+                    style={{ width: '18px', height: '18px', cursor: 'pointer' }}
+                  />
+                </td>
                 <td style={{ padding: '1.25rem 1rem', fontSize: '0.85rem', fontWeight: '600', color: '#1e293b' }}>{student.nis}</td>
                 <td style={{ padding: '1.25rem 1rem' }}>
                     <span style={{ fontWeight: '700', color: 'var(--primary-green)', fontSize: '0.9rem' }}>{student.name}</span>
