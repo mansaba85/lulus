@@ -12,6 +12,8 @@ const Countdown = () => {
   const [schoolName, setSchoolName] = useState('MA NU 01 Banyuputih');
   const [schoolLogo, setSchoolLogo] = useState(logo);
 
+  const [isChecking, setIsChecking] = useState(true);
+
   useEffect(() => {
     const fetchSettings = async () => {
       try {
@@ -29,6 +31,14 @@ const Countdown = () => {
           const [hour, minute, second] = releaseTime.split(':').map(Number);
           
           const targetDate = new Date(year, month - 1, day, hour, minute, second || 0).getTime();
+          const now = Date.now();
+
+          if (now >= targetDate) {
+            navigate('/', { replace: true });
+            return;
+          }
+
+          setIsChecking(false);
           console.log('⏳ Countdown Target:', new Date(targetDate).toLocaleString());
 
           const timer = setInterval(() => {
@@ -38,7 +48,7 @@ const Countdown = () => {
             if (distance <= 0) {
               clearInterval(timer);
               setIsTimeUp(true);
-              navigate('/');
+              navigate('/', { replace: true });
               return;
             }
 
@@ -54,6 +64,7 @@ const Countdown = () => {
         }
       } catch (err) {
         console.error('Failed to fetch settings');
+        setIsChecking(false);
       }
     };
     fetchSettings();
@@ -88,100 +99,137 @@ const Countdown = () => {
   );
 
   return (
-    <div className="home-container" style={{ display: 'flex', minHeight: '100vh' }}>
-      <div className="content-side" style={{ 
-        flex: 1, 
-        padding: '2rem 4rem', 
-        display: 'flex', 
-        flexDirection: 'column',
-        justifyContent: 'space-between',
-        backgroundColor: '#fff'
-      }}>
-        <header className="mobile-header-sync" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <div className="logo" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-            <img src={schoolLogo} alt="Logo" style={{ width: '45px', height: '45px', objectFit: 'contain' }} />
-          </div>
-          <nav style={{ display: 'flex', gap: '1.5rem', alignItems: 'center', fontWeight: '500' }}>
-            <a href="/" style={{ color: 'var(--text-main)' }}>Home</a>
-            <a href="/informasi" style={{ color: 'var(--text-main)' }}>Informasi</a>
-            <a href="/admin" className="flex-center" style={{ color: 'var(--text-main)', fontSize: '1.2rem' }}>
-              <User size={20} />
-            </a>
-          </nav>
-        </header>
-
-        <motion.main 
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.6 }}
-          style={{ textAlign: 'center', margin: 'auto', width: '100%' }}
+    <AnimatePresence mode="wait">
+      {isChecking ? (
+        <motion.div 
+          key="loader"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          style={{ 
+            height: '100vh', 
+            width: '100vw', 
+            display: 'flex', 
+            flexDirection: 'column',
+            alignItems: 'center', 
+            justifyContent: 'center', 
+            backgroundColor: '#fff',
+            gap: '1.5rem'
+          }}
         >
-          <h2 className="countdown-title" style={{ fontSize: '2.5rem', fontWeight: '800', color: 'var(--text-main)', marginBottom: '2.5rem', textTransform: 'uppercase', letterSpacing: '1px', lineHeight: 1.2 }}>
-            MENUJU<br />PENGUMUMAN<br />KELULUSAN
-          </h2>
+          <div className="loader-ring"></div>
+          <motion.p
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            style={{ color: 'var(--primary-green)', fontWeight: '600', letterSpacing: '1px' }}
+          >
+            MENYIAPKAN HALAMAN...
+          </motion.p>
+        </motion.div>
+      ) : (
+        <motion.div 
+          key="content"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="home-container" 
+          style={{ display: 'flex', minHeight: '100vh' }}
+        >
+          <div className="content-side" style={{ 
+            flex: 1, 
+            padding: '2rem 4rem', 
+            display: 'flex', 
+            flexDirection: 'column',
+            justifyContent: 'space-between',
+            backgroundColor: '#fff'
+          }}>
+            <header className="mobile-header-sync" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div className="logo" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                <img src={schoolLogo} alt="Logo" style={{ width: '45px', height: '45px', objectFit: 'contain' }} />
+              </div>
+              <nav style={{ display: 'flex', gap: '1.5rem', alignItems: 'center', fontWeight: '500' }}>
+                <a href="/" style={{ color: 'var(--text-main)' }}>Home</a>
+                <a href="/informasi" style={{ color: 'var(--text-main)' }}>Informasi</a>
+                <a href="/admin" className="flex-center" style={{ color: 'var(--text-main)', fontSize: '1.2rem' }}>
+                  <User size={20} />
+                </a>
+              </nav>
+            </header>
+
+            <motion.main 
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.6 }}
+              style={{ textAlign: 'center', margin: 'auto', width: '100%' }}
+            >
+              <h2 className="countdown-title" style={{ fontSize: '2.5rem', fontWeight: '800', color: 'var(--text-main)', marginBottom: '2.5rem', textTransform: 'uppercase', letterSpacing: '1px', lineHeight: 1.2 }}>
+                MENUJU<br />PENGUMUMAN<br />KELULUSAN
+              </h2>
+              
+              <div className="timer-container" style={{ display: 'flex', gap: '1rem', justifyContent: 'center', width: '100%' }}>
+                <TimerCard value={timeLeft.days} label="Hari" />
+                <TimerCard value={timeLeft.hours} label="Jam" />
+                <TimerCard value={timeLeft.minutes} label="Menit" />
+                <TimerCard value={timeLeft.seconds} label="Detik" />
+              </div>
+            </motion.main>
+
+            <footer className="mobile-footer-sync" style={{ 
+              display: 'flex', 
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: '1rem',
+              marginTop: '2rem',
+              paddingBottom: '2rem'
+            }}>
+              <div className="socials" style={{ display: 'flex', gap: '1.25rem', marginBottom: '0.5rem' }}>
+                <a href="#" style={{ color: '#94a3b8' }}><Globe size={22} /></a>
+                <a href="#" style={{ color: '#94a3b8' }}><Monitor size={22} /></a>
+                <a href="#" style={{ color: '#94a3b8' }}><Smartphone size={22} /></a>
+              </div>
+              <p style={{ fontSize: '0.7rem', color: '#94a3b8', textAlign: 'center', textTransform: 'uppercase', letterSpacing: '1px' }}>
+                © 2026 - {schoolName}<br />ALL RIGHT RESERVED
+              </p>
+            </footer>
+          </div>
+
+          <div className="illustration-side" style={{ 
+            flex: 1, 
+            backgroundColor: '#f0f9f4',
+            position: 'relative',
+            overflow: 'hidden'
+          }}>
+            <img src="/hero-bg.png" alt="Graduation" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          </div>
           
-          <div className="timer-container" style={{ display: 'flex', gap: '1rem', justifyContent: 'center', width: '100%' }}>
-            <TimerCard value={timeLeft.days} label="Hari" />
-            <TimerCard value={timeLeft.hours} label="Jam" />
-            <TimerCard value={timeLeft.minutes} label="Menit" />
-            <TimerCard value={timeLeft.seconds} label="Detik" />
-          </div>
-        </motion.main>
-
-        <footer className="mobile-footer-sync" style={{ 
-          display: 'flex', 
-          flexDirection: 'column',
-          alignItems: 'center',
-          gap: '1rem',
-          marginTop: '2rem',
-          paddingBottom: '2rem'
-        }}>
-          <div className="socials" style={{ display: 'flex', gap: '1.25rem', marginBottom: '0.5rem' }}>
-            <a href="#" style={{ color: '#94a3b8' }}><Globe size={22} /></a>
-            <a href="#" style={{ color: '#94a3b8' }}><Monitor size={22} /></a>
-            <a href="#" style={{ color: '#94a3b8' }}><Smartphone size={22} /></a>
-          </div>
-          <p style={{ fontSize: '0.7rem', color: '#94a3b8', textAlign: 'center', textTransform: 'uppercase', letterSpacing: '1px' }}>
-            © 2026 - {schoolName}<br />ALL RIGHT RESERVED
-          </p>
-        </footer>
-      </div>
-
-      <div className="illustration-side" style={{ 
-        flex: 1, 
-        backgroundColor: '#f0f9f4',
-        position: 'relative',
-        overflow: 'hidden'
-      }}>
-        <img src="/hero-bg.png" alt="Graduation" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-      </div>
-      
-      <style>{`
-        @media (max-width: 1024px) {
-          .home-container { flex-direction: column !important; }
-          .illustration-side { display: none !important; }
-          .content-side { min-height: 100vh !important; padding: 2rem !important; }
-        }
-        @media (max-width: 640px) {
-          .content-side { padding: 1.5rem !important; }
-          .mobile-header-sync { 
-            margin-bottom: 2.5rem !important; 
-            flex-direction: row !important; 
-            flex-wrap: nowrap !important;
-            justify-content: space-between !important; 
-            align-items: center !important; 
-            gap: 0.5rem !important; 
-          }
-          nav { gap: 0.85rem !important; font-size: 0.85rem !important; }
-          nav a { white-space: nowrap !important; }
-          .countdown-title { fontSize: 1.5rem !important; margin-bottom: 2rem !important; }
-          .timer-container { gap: 0.4rem !important; }
-          .timer-box { width: 68px !important; height: 78px !important; }
-          .timer-box span { fontSize: 1.8rem !important; }
-          .mobile-footer-sync { margin-top: 2rem !important; }
-        }
-      `}</style>
-    </div>
+          <style>{`
+            @media (max-width: 1024px) {
+              .home-container { flex-direction: column !important; }
+              .illustration-side { display: none !important; }
+              .content-side { min-height: 100vh !important; padding: 2rem !important; }
+            }
+            @media (max-width: 640px) {
+              .content-side { padding: 1.5rem !important; }
+              .mobile-header-sync { 
+                margin-bottom: 2.5rem !important; 
+                flex-direction: row !important; 
+                flex-wrap: nowrap !important;
+                justify-content: space-between !important; 
+                align-items: center !important; 
+                gap: 0.5rem !important; 
+              }
+              nav { gap: 0.85rem !important; font-size: 0.85rem !important; }
+              nav a { white-space: nowrap !important; }
+              .countdown-title { fontSize: 1.5rem !important; margin-bottom: 2rem !important; }
+              .timer-container { gap: 0.4rem !important; }
+              .timer-box { width: 68px !important; height: 78px !important; }
+              .timer-box span { fontSize: 1.8rem !important; }
+              .mobile-footer-sync { margin-top: 2rem !important; }
+            }
+          `}</style>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 };
 

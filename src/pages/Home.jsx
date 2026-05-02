@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Search, User, Globe, Monitor, Smartphone } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import illustration from '../assets/illustration.png';
@@ -12,6 +12,7 @@ const Home = () => {
   const [schoolName, setSchoolName] = useState('MA NU 01 BANYUPUTIH');
   const [schoolLogo, setSchoolLogo] = useState(logo);
   const [token, setToken] = useState('');
+  const [isChecking, setIsChecking] = useState(true);
 
   useEffect(() => {
     const fetchSettings = async () => {
@@ -37,11 +38,16 @@ const Home = () => {
           
           if (now < targetDate) {
             console.log('⏳ Belum waktunya, pindah ke Countdown...');
-            navigate('/countdown');
+            navigate('/countdown', { replace: true });
+          } else {
+            setIsChecking(false);
           }
+        } else {
+          setIsChecking(false);
         }
       } catch (err) {
         console.error('Failed to fetch settings');
+        setIsChecking(false);
       }
     };
     fetchSettings();
@@ -66,8 +72,43 @@ const Home = () => {
   };
 
   return (
-    <div className="home-container" style={{ display: 'flex', minHeight: '100vh' }}>
-      {/* Left Side: Content */}
+    <AnimatePresence mode="wait">
+      {isChecking ? (
+        <motion.div 
+          key="loader"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          style={{ 
+            height: '100vh', 
+            width: '100vw', 
+            display: 'flex', 
+            flexDirection: 'column',
+            alignItems: 'center', 
+            justifyContent: 'center', 
+            backgroundColor: '#fff',
+            gap: '1.5rem'
+          }}
+        >
+          <div className="loader-ring"></div>
+          <motion.p
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            style={{ color: 'var(--primary-green)', fontWeight: '600', letterSpacing: '1px' }}
+          >
+            MENYIAPKAN HALAMAN...
+          </motion.p>
+        </motion.div>
+      ) : (
+        <motion.div 
+          key="content"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="home-container" 
+          style={{ display: 'flex', minHeight: '100vh' }}
+        >
+          {/* Left Side: Content */}
       <div className="content-side" style={{ 
         flex: 1, 
         padding: '2rem 4rem', 
@@ -196,7 +237,8 @@ const Home = () => {
         />
       </div>
 
-      {/* Responsive adjustments (Media Queries in index.css would be better, but for now inline styles or simple JS) */}
+      </motion.div>
+      )}
       <style>{`
         @media (max-width: 1024px) {
           .home-container { flex-direction: column !important; }
@@ -237,7 +279,7 @@ const Home = () => {
           footer p { text-align: center !important; }
         }
       `}</style>
-    </div>
+    </AnimatePresence>
   );
 };
 
